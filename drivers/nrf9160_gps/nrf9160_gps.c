@@ -35,6 +35,8 @@ LOG_MODULE_REGISTER(nrf9160_gps, CONFIG_NRF9160_GPS_LOG_LEVEL);
 #define FUNCTIONAL_MODE_ENABLED		1
 #endif
 
+static bool gps_stopped = true;
+
 struct gps_drv_data {
 	gps_trigger_handler_t trigger_handler;
 	struct gps_trigger trigger;
@@ -479,10 +481,14 @@ static int channel_get(struct device *dev, enum gps_channel chan,
 
 static int stop(struct device *dev)
 {
+
 	struct gps_drv_data *drv_data = dev->driver_data;
 	int retval;
+	
+	if (!gps_stopped) {
+		LOG_DBG("Stopping GPS");
 
-	LOG_DBG("Stopping GPS");
+		atomic_set(&drv_data->gps_is_active, 0);
 
 	atomic_set(&drv_data->gps_is_active, 0);
 
