@@ -30,8 +30,8 @@ static const char subscribe[] = "AT+CEREG=5";
 
 #if defined(CONFIG_LTE_LOCK_BANDS)
 /* Lock LTE bands 3, 4, 13 and 20 (volatile setting) */
-static const char lock_bands[] = "AT%XBANDLOCK=2,\""CONFIG_LTE_LOCK_BAND_MASK
-				 "\"";
+static const char lock_bands[] =
+	"AT%XBANDLOCK=2,\"" CONFIG_LTE_LOCK_BAND_MASK "\"";
 #endif
 #if defined(CONFIG_LTE_LOCK_PLMN)
 /* Lock PLMN */
@@ -39,13 +39,13 @@ static const char lock_plmn[] = "AT+COPS=1,2,\""
 				 CONFIG_LTE_LOCK_PLMN_STRING"\"";
 #endif
 /* Request eDRX settings to be used */
-static const char edrx_req[] = "AT+CEDRXS=1,"CONFIG_LTE_EDRX_REQ_ACTT_TYPE
-	",\""CONFIG_LTE_EDRX_REQ_VALUE"\"";
+static const char edrx_req[] = "AT+CEDRXS=1," CONFIG_LTE_EDRX_REQ_ACTT_TYPE
+			       ",\"" CONFIG_LTE_EDRX_REQ_VALUE "\"";
 /* Request eDRX to be disabled */
 static const char edrx_disable[] = "AT+CEDRXS=3";
 /* Request modem to go to power saving mode */
-static const char psm_req[] = "AT+CPSMS=1,,,\""CONFIG_LTE_PSM_REQ_RPTAU
-			      "\",\""CONFIG_LTE_PSM_REQ_RAT"\"";
+static const char psm_req[] = "AT+CPSMS=1,,,\"" CONFIG_LTE_PSM_REQ_RPTAU
+			      "\",\"" CONFIG_LTE_PSM_REQ_RAT "\"";
 
 /* Request PSM to be disabled */
 static const char psm_disable[] = "AT+CPSMS=";
@@ -82,7 +82,7 @@ static struct k_sem link;
 static struct at_param_list params;
 
 #if defined(CONFIG_LTE_PDP_CMD) && defined(CONFIG_LTE_PDP_CONTEXT)
-static const char cgdcont[] = "AT+CGDCONT="CONFIG_LTE_PDP_CONTEXT;
+static const char cgdcont[] = "AT+CGDCONT=" CONFIG_LTE_PDP_CONTEXT;
 #endif
 #if defined(CONFIG_LTE_PDN_AUTH_CMD) && defined(CONFIG_LTE_PDN_AUTH)
 static const char cgauth[] = "AT+CGAUTH="CONFIG_LTE_PDN_AUTH;
@@ -225,6 +225,28 @@ exit:
 	return err;
 }
 
+int lte_lc_init_connect_manager(at_cmd_handler_t connection_handler)
+{
+	int ret;
+
+	ret = w_lte_lc_init();
+	if (ret) {
+		return ret;
+	}
+
+	if (at_cmd_write(network_mode, NULL, 0, NULL) != 0) {
+		return -EIO;
+	}
+
+	at_cmd_set_notification_handler(connection_handler);
+
+	if (at_cmd_write(normal, NULL, 0, NULL) != 0) {
+		return -EIO;
+	}
+
+	return ret;
+}
+
 static int w_lte_lc_init_and_connect(struct device *unused)
 {
 	int ret;
@@ -288,8 +310,7 @@ int lte_lc_normal(void)
 
 int lte_lc_psm_req(bool enable)
 {
-	if (at_cmd_write(enable ? psm_req : psm_disable,
-			 NULL, 0, NULL) != 0) {
+	if (at_cmd_write(enable ? psm_req : psm_disable, NULL, 0, NULL) != 0) {
 		return -EIO;
 	}
 
@@ -298,8 +319,8 @@ int lte_lc_psm_req(bool enable)
 
 int lte_lc_edrx_req(bool enable)
 {
-	if (at_cmd_write(enable ? edrx_req : edrx_disable,
-			 NULL, 0, NULL) != 0) {
+	if (at_cmd_write(enable ? edrx_req : edrx_disable, NULL, 0, NULL) !=
+	    0) {
 		return -EIO;
 	}
 
