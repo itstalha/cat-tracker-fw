@@ -147,8 +147,8 @@ wait:
 		case NRF_GNSS_PVT_DATA_ID:
 			copy_pvt(&fresh_pvt.pvt, &raw_gps_data.pvt);
 
-			if ((drv_data->trigger.chan == GPS_CHAN_PVT)
-			   && (drv_data->trigger.type == GPS_TRIG_DATA_READY)) {
+			if ((drv_data->trigger.chan == GPS_CHAN_PVT) &&
+			    (drv_data->trigger.type == GPS_TRIG_DATA_READY)) {
 				trigger_send = true;
 				LOG_DBG("PVT data ready");
 			}
@@ -220,8 +220,8 @@ static int init_thread(struct device *dev)
 static int enable_gps(struct device *dev)
 {
 	int err;
-	char buf[50] = {0};
-	struct at_param_list at_resp_list = {0};
+	char buf[50] = { 0 };
+	struct at_param_list at_resp_list = { 0 };
 	u16_t gps_param_value, functional_mode;
 
 	err = at_params_list_init(&at_resp_list, AT_XSYSTEMMODE_PARAMS_COUNT);
@@ -230,7 +230,7 @@ static int enable_gps(struct device *dev)
 		return err; /* No need to clean up; the list was never init'd */
 	}
 
- 	err = at_cmd_write(AT_XSYSTEMMODE_REQUEST, buf, sizeof(buf), NULL);
+	err = at_cmd_write(AT_XSYSTEMMODE_REQUEST, buf, sizeof(buf), NULL);
 	if (err) {
 		LOG_ERR("Could not get modem's system mode");
 		err = -EIO;
@@ -246,8 +246,7 @@ static int enable_gps(struct device *dev)
 		goto enable_gps_clean_exit;
 	}
 
-	err = at_params_short_get(&at_resp_list,
-				  AT_XSYSTEMMODE_GPS_PARAM_INDEX,
+	err = at_params_short_get(&at_resp_list, AT_XSYSTEMMODE_GPS_PARAM_INDEX,
 				  &gps_param_value);
 	if (err) {
 		LOG_ERR("Could not get GPS mode state, error: %d", err);
@@ -302,7 +301,6 @@ static int enable_gps(struct device *dev)
 			err);
 		goto enable_gps_clean_exit;
 	}
-	LOG_DBG("Functional mode: %d", functional_mode);
 
 	LOG_DBG("Functional mode: %d", functional_mode);
 
@@ -435,20 +433,19 @@ static int init(struct device *dev)
 
 	init_thread(dev);
 
-	#if CONFIG_NRF9160_GPS_SET_MAGPIO
-		int err;
-		char buf[50] = {0};
+#if CONFIG_NRF9160_GPS_SET_MAGPIO
+	int err;
+	char buf[50] = { 0 };
 
-		err = at_cmd_write(CONFIG_NRF9160_GPS_MAGPIO_STRING,
-				buf, sizeof(buf), NULL);
-		if (err) {
-			LOG_ERR("Could not confiugure MAGPIO, error: %d", err);
-			return err;
-		}
+	err = at_cmd_write(CONFIG_NRF9160_GPS_MAGPIO_STRING, buf, sizeof(buf),
+			   NULL);
+	if (err) {
+		LOG_ERR("Could not confiugure MAGPIO, error: %d", err);
+		return err;
+	}
 
-		LOG_DBG("MAGPIO set: %s",
-			log_strdup(CONFIG_NRF9160_GPS_MAGPIO_STRING));
-	#endif /* CONFIG_NRF9160_GPS_SET_MAGPIO */
+	LOG_DBG("MAGPIO set: %s", log_strdup(CONFIG_NRF9160_GPS_MAGPIO_STRING));
+#endif /* CONFIG_NRF9160_GPS_SET_MAGPIO */
 
 	return 0;
 }
