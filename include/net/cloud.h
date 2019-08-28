@@ -63,6 +63,12 @@ enum cloud_pair_type {
 	CLOUD_PAIR_PIN,
 };
 
+/**@brief Cloud action type */
+enum cloud_action_type {
+	CLOUD_PAIR,
+	CLOUD_REPORT,
+};
+
 /**@brief Cloud pairing data. */
 struct cloud_pair_data {
 	enum cloud_pair_type type;
@@ -115,6 +121,7 @@ typedef void (*cloud_evt_handler_t)(const struct cloud_backend *const backend,
 struct cloud_api {
 	int (*init)(const struct cloud_backend *const backend,
 		    cloud_evt_handler_t handler);
+	int (*init_config)(const struct cloud_backend *const backend);
 	int (*uninit)(const struct cloud_backend *const backend);
 	int (*connect)(const struct cloud_backend *const backend);
 	int (*disconnect)(const struct cloud_backend *const backend);
@@ -124,6 +131,8 @@ struct cloud_api {
 	int (*input)(const struct cloud_backend *const backend);
 	int (*user_data_set)(const struct cloud_backend *const backend,
 			     void *user_data);
+	int (*report_and_update)(const struct cloud_backend *const backend,
+				 const enum cloud_action_type action);
 };
 
 /**@brief Structure for cloud backend configuration. */
@@ -147,13 +156,11 @@ struct cloud_backend {
  * @param backend Pointer to cloud backend structure.
  * @param handler Handler to receive events from the backend.
  */
-static inline int cloud_init(
-	struct cloud_backend *const backend,
-	cloud_evt_handler_t handler)
+static inline int cloud_init(struct cloud_backend *const backend,
+			     cloud_evt_handler_t handler)
 {
-	if (backend == NULL
-	    || backend->api == NULL
-	    || backend->api->init == NULL) {
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->init == NULL) {
 		return -ENOTSUP;
 	}
 
@@ -164,6 +171,16 @@ static inline int cloud_init(
 	return backend->api->init(backend, handler);
 }
 
+static inline int cloud_init_config(struct cloud_backend *const backend)
+{
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->init_config == NULL) {
+		return -ENOTSUP;
+	}
+
+	return backend->api->init_config(backend);
+}
+
 /**@brief Uninitialize a cloud backend. Gracefully disconnects
  *        remote endpoint and releases memory.
  *
@@ -171,9 +188,8 @@ static inline int cloud_init(
  */
 static inline int cloud_uninit(const struct cloud_backend *const backend)
 {
-	if (backend == NULL
-	    || backend->api == NULL
-	    || backend->api->uninit == NULL) {
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->uninit == NULL) {
 		return -ENOTSUP;
 	}
 
@@ -193,9 +209,8 @@ static inline int cloud_uninit(const struct cloud_backend *const backend)
  */
 static inline int cloud_connect(const struct cloud_backend *const backend)
 {
-	if (backend == NULL
-	    || backend->api == NULL
-	    || backend->api->connect == NULL) {
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->connect == NULL) {
 		return -ENOTSUP;
 	}
 
@@ -210,9 +225,8 @@ static inline int cloud_connect(const struct cloud_backend *const backend)
  */
 static inline int cloud_disconnect(const struct cloud_backend *const backend)
 {
-	if (backend == NULL
-	    || backend->api == NULL
-	    || backend->api->disconnect == NULL) {
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->disconnect == NULL) {
 		return -ENOTSUP;
 	}
 
@@ -229,9 +243,8 @@ static inline int cloud_disconnect(const struct cloud_backend *const backend)
 static inline int cloud_send(const struct cloud_backend *const backend,
 			     struct cloud_msg *msg)
 {
-	if (backend == NULL
-	    || backend->api == NULL
-	    || backend->api->send == NULL) {
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->send == NULL) {
 		return -ENOTSUP;
 	}
 
@@ -270,13 +283,23 @@ static inline int cloud_ping(const struct cloud_backend *const backend)
  */
 static inline int cloud_input(const struct cloud_backend *const backend)
 {
-	if (backend == NULL
-	    || backend->api == NULL
-	    || backend->api->input == NULL) {
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->input == NULL) {
 		return -ENOTSUP;
 	}
 
 	return backend->api->input(backend);
+}
+
+static inline int cloud_report_and_update(struct cloud_backend *const backend,
+					  const enum cloud_action_type action)
+{
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->report_and_update == NULL) {
+		return -ENOTSUP;
+	}
+
+	return backend->api->report_and_update(backend, action);
 }
 
 /**@brief Set the user-defined data that is passed as an argument to cloud event
@@ -289,9 +312,8 @@ static inline int cloud_input(const struct cloud_backend *const backend)
 static inline int cloud_user_data_set(struct cloud_backend *const backend,
 				      void *user_data)
 {
-	if (backend == NULL
-	    || backend->api == NULL
-	    || backend->api->user_data_set == NULL) {
+	if (backend == NULL || backend->api == NULL ||
+	    backend->api->user_data_set == NULL) {
 		return -ENOTSUP;
 	}
 
@@ -312,19 +334,15 @@ static inline int cloud_user_data_set(struct cloud_backend *const backend,
  **/
 struct cloud_backend *cloud_get_binding(const char *name);
 
-#define CLOUD_BACKEND_DEFINE(_name, _api)			               \
-									       \
-	static struct cloud_backend_config UTIL_CAT(_name, _config) =	       \
-	{								       \
-		.name = STRINGIFY(_name)				       \
-	};								       \
-									       \
-	static const struct cloud_backend _name				       \
-	__attribute__ ((section(".cloud_backends"))) __attribute__((used)) =   \
-	{								       \
-		.api = &_api,						       \
-		.config = &UTIL_CAT(_name, _config)			       \
-	};
+#define CLOUD_BACKEND_DEFINE(_name, _api)                                      \
+                                                                               \
+	static struct cloud_backend_config UTIL_CAT(                           \
+		_name, _config) = { .name = STRINGIFY(_name) };                \
+                                                                               \
+	static const struct cloud_backend _name                                \
+		__attribute__((section(".cloud_backends"))) __attribute__(     \
+			(used)) = { .api = &_api,                              \
+				    .config = &UTIL_CAT(_name, _config) };
 
 /**
  * @}
