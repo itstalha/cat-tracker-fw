@@ -209,7 +209,6 @@ void connection_handler(char *response)
 connection:
 	if (k_sem_count_get(&connect_sem) == 0) {
 		k_sem_give(&connect_sem);
-		printk("SEM GIVEN\n");
 	}
 
 	return;
@@ -217,7 +216,6 @@ connection:
 no_connection:
 	if (k_sem_count_get(&connect_sem) == 1) {
 		k_sem_take(&connect_sem, 0);
-		printk("SEM TAKEN\n");
 	}
 
 	return;
