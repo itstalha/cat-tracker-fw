@@ -1,27 +1,27 @@
 /*
-  Copyright (c) 2009 Dave Gamble
- 
+   Copyright (c) 2009 Dave Gamble
 
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
- 
 
-  The above copyright notice and this permission notice shall be included in
-  all copies or substantial portions of the Software.
- 
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-  THE SOFTWARE.
-*/
+
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+ */
 
 #ifndef cJSON__h
 #define cJSON__h
@@ -46,21 +46,21 @@ extern "C" {
 
 /* The cJSON structure: */
 typedef struct cJSON {
-	struct cJSON *next, *prev; /* next/prev allow you to walk array/object
-				      chains. Alternatively, use
-				      GetArraySize/GetArrayItem/GetObjectItem */
-	struct cJSON *child; /* An array or object item will have a child
-				      pointer pointing to a chain of the items in the
-				      array/object. */
+	struct cJSON *next, *prev;      /* next/prev allow you to walk array/object
+	                                   chains. Alternatively, use
+	                                   GetArraySize/GetArrayItem/GetObjectItem */
+	struct cJSON *child;            /* An array or object item will have a child
+	                                         pointer pointing to a chain of the items in the
+	                                         array/object. */
 
-	int type; /* The type of the item, as above. */
+	int type;                       /* The type of the item, as above. */
 
-	char *valuestring; /* The item's string, if type==cJSON_String */
-	int valueint; /* The item's number, if type==cJSON_Number */
-	double valuedouble; /* The item's number, if type==cJSON_Number */
+	char *valuestring;              /* The item's string, if type==cJSON_String */
+	int valueint;                   /* The item's number, if type==cJSON_Number */
+	double valuedouble;             /* The item's number, if type==cJSON_Number */
 
-	char *string; /* The item's name string, if this item is the child of,
-			 or is in the list of subitems of an object. */
+	char *string;                   /* The item's name string, if this item is the child of,
+	                                   or is in the list of subitems of an object. */
 } cJSON;
 
 typedef struct cJSON_Hooks {
@@ -123,8 +123,8 @@ extern void cJSON_AddItemToObject(cJSON *object, const char *string,
 extern void cJSON_AddItemToObjectCS(
 	cJSON *object, const char *string,
 	cJSON *item); /* Use this when string is definitely const (i.e. a
-			 literal, or as good as), and will definitely survive
-			 the cJSON object */
+                         literal, or as good as), and will definitely survive
+                         the cJSON object */
 /* Append reference to item to the specified array/object. Use this when you
  * want to add an existing cJSON to a new cJSON, but don't want to corrupt your
  * existing cJSON. */
@@ -149,9 +149,9 @@ extern void cJSON_ReplaceItemInObject(cJSON *object, const char *string,
 /* Duplicate a cJSON item */
 extern cJSON *cJSON_Duplicate(cJSON *item, int recurse);
 /* Duplicate will create a new, identical cJSON item to the one you pass, in new
-memory that will need to be released. With recurse!=0, it will duplicate any
-children connected to the item. The item->next and ->prev pointers are always
-zero on return from Duplicate. */
+   memory that will need to be released. With recurse!=0, it will duplicate any
+   children connected to the item. The item->next and ->prev pointers are always
+   zero on return from Duplicate. */
 
 /* ParseWithOpts allows you to require (and check) that the JSON is null
  * terminated, and to retrieve the pointer to the final byte parsed. */
@@ -162,24 +162,24 @@ extern cJSON *cJSON_ParseWithOpts(const char *value,
 extern void cJSON_Minify(char *json);
 
 /* Macros for creating things quickly. */
-#define cJSON_AddNullToObject(object, name)                                    \
+#define cJSON_AddNullToObject(object, name) \
 	cJSON_AddItemToObject(object, name, cJSON_CreateNull())
-#define cJSON_AddTrueToObject(object, name)                                    \
+#define cJSON_AddTrueToObject(object, name) \
 	cJSON_AddItemToObject(object, name, cJSON_CreateTrue())
-#define cJSON_AddFalseToObject(object, name)                                   \
+#define cJSON_AddFalseToObject(object, name) \
 	cJSON_AddItemToObject(object, name, cJSON_CreateFalse())
-#define cJSON_AddBoolToObject(object, name, b)                                 \
+#define cJSON_AddBoolToObject(object, name, b) \
 	cJSON_AddItemToObject(object, name, cJSON_CreateBool(b))
-#define cJSON_AddNumberToObject(object, name, n)                               \
+#define cJSON_AddNumberToObject(object, name, n) \
 	cJSON_AddItemToObject(object, name, cJSON_CreateNumber(n))
-#define cJSON_AddStringToObject(object, name, s)                               \
+#define cJSON_AddStringToObject(object, name, s) \
 	cJSON_AddItemToObject(object, name, cJSON_CreateString(s))
 
 /* When assigning an integer value, it needs to be propagated to valuedouble
  * too. */
-#define cJSON_SetIntValue(object, val)                                         \
+#define cJSON_SetIntValue(object, val) \
 	((object) ? (object)->valueint = (object)->valuedouble = (val) : (val))
-#define cJSON_SetNumberValue(object, val)                                      \
+#define cJSON_SetNumberValue(object, val) \
 	((object) ? (object)->valueint = (object)->valuedouble = (val) : (val))
 
 #ifdef __cplusplus
