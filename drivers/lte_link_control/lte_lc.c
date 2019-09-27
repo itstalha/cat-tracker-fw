@@ -78,6 +78,8 @@ static const char nw_mode_preferred[] = "AT%XSYSTEMMODE=1,0,1,0";
 static const char nw_mode_fallback[] = "AT%XSYSTEMMODE=0,1,1,0";
 #endif
 
+static const char gps_mode[] = "AT%XSYSTEMMODE=0,0,1,0";
+
 static struct k_sem link;
 static struct at_param_list params;
 
@@ -238,7 +240,7 @@ int lte_lc_init_connect_manager(at_cmd_handler_t connection_handler)
 		return -EIO;
 	}
 
-	if (at_cmd_write(network_mode, NULL, 0, NULL) != 0) {
+	if (at_cmd_write(nw_mode_preferred, NULL, 0, NULL) != 0) {
 		return -EIO;
 	}
 
