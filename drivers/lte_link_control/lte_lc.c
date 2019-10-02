@@ -28,6 +28,9 @@ static const char mdm_trace[] = "AT%XMODEMTRACE=1,2";
 /* Subscribes to notifications with level 2 */
 static const char subscribe[] = "AT+CEREG=5";
 
+/* Request current network registration status */
+static const char current_nw_status[] = "AT+CEREG?";
+
 #if defined(CONFIG_LTE_LOCK_BANDS)
 /* Lock LTE bands 3, 4, 13 and 20 (volatile setting) */
 static const char lock_bands[] =
@@ -36,7 +39,7 @@ static const char lock_bands[] =
 #if defined(CONFIG_LTE_LOCK_PLMN)
 /* Lock PLMN */
 static const char lock_plmn[] = "AT+COPS=1,2,\""
-				 CONFIG_LTE_LOCK_PLMN_STRING"\"";
+				CONFIG_LTE_LOCK_PLMN_STRING "\"";
 #endif
 /* Request eDRX settings to be used */
 static const char edrx_req[] = "AT+CEDRXS=1," CONFIG_LTE_EDRX_REQ_ACTT_TYPE
@@ -95,7 +98,7 @@ static const char legacy_pco[] = "AT%XEPCO=0";
 
 void at_handler(char *response)
 {
-	char  id[16];
+	char id[16];
 	u32_t val;
 	size_t len = 16;
 
@@ -227,32 +230,6 @@ exit:
 	return err;
 }
 
-int lte_lc_init_connect_manager(at_cmd_handler_t connection_handler)
-{
-	int ret;
-
-	ret = w_lte_lc_init();
-	if (ret) {
-		return ret;
-	}
-
-	if (at_cmd_write(offline, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
-
-	if (at_cmd_write(nw_mode_preferred, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
-
-	at_cmd_set_notification_handler(connection_handler);
-
-	if (at_cmd_write(normal, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
-
-	return ret;
-}
-
 static int w_lte_lc_init_and_connect(struct device *unused)
 {
 	int ret;
@@ -263,6 +240,56 @@ static int w_lte_lc_init_and_connect(struct device *unused)
 	}
 
 	return w_lte_lc_connect();
+}
+
+int lte_lc_gps_mode(void)
+{
+	if (at_cmd_write(offline, NULL, 0, NULL) != 0) {
+		return -EIO;
+	}
+
+	if (at_cmd_write(gps_mode, NULL, 0, NULL) != 0) {
+		return -EIO;
+	}
+
+	if (at_cmd_write(normal, NULL, 0, NULL) != 0) {
+		return -EIO;
+	}
+
+	return 0;
+}
+
+int lte_lc_registration_status(void)
+{
+	int err;
+	char id[16];
+	u32_t val;
+	size_t len = 16;
+	char buf[50] = { 0 };
+
+	at_params_list_init(&params, 10);
+
+	if (at_cmd_write(current_nw_status, buf, sizeof(buf), NULL) != 0) {
+		return -EIO;
+	}
+
+	LOG_DBG("recv: %s", log_strdup(buf));
+
+	at_parser_params_from_str(buf, NULL, &params);
+	at_params_string_get(&params, 0, id, &len);
+
+	if ((len > 0) &&
+	    (memcmp(id, "+CEREG", 6) == 0)) {
+		at_params_int_get(&params, 1, &val);
+
+		if (!((val == 1) || (val == 5))) {
+			err = -ENOTCONN;
+		}
+	}
+
+	at_params_list_free(&params);
+
+	return 0;
 }
 
 /* lte lc Init wrapper */
@@ -285,23 +312,6 @@ int lte_lc_init_and_connect(void)
 	int err = w_lte_lc_init_and_connect(x);
 
 	return err;
-}
-
-int lte_lc_gps_mode(void)
-{
-	if (at_cmd_write(offline, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
-
-	if (at_cmd_write(gps_mode, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
-
-	if (at_cmd_write(normal, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
-
-	return 0;
 }
 
 int lte_lc_offline(void)
