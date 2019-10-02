@@ -13,6 +13,7 @@
 #define ZEPHYR_INCLUDE_LTE_LINK_CONTROL_H_
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* NOTE: enum lte_lc_nw_reg_status maps directly to the registration status
  *	 as returned by the AT command "AT+CEREG?".
  */
@@ -51,6 +52,8 @@ enum lte_lc_func_mode {
 int lte_lc_init_connect_manager(at_cmd_handler_t connection_handler);
 >>>>>>> feat: connection handler
 
+=======
+>>>>>>> fix: removed comment
 /** @brief Function for initializing
  * the modem.  NOTE: a follow-up call to lte_lc_connect()
  * must be made.
