@@ -19,97 +19,102 @@
 
 LOG_MODULE_REGISTER(modem_info);
 
-#define INVALID_DESCRIPTOR	-1
+#define INVALID_DESCRIPTOR 		-1
 
-#define AT_CMD_CESQ		"AT+CESQ"
-#define AT_CMD_CESQ_ON		"AT%CESQ=1"
-#define AT_CMD_CESQ_OFF		"AT%CESQ=0"
-#define AT_CMD_CESQ_RESP	"%CESQ"
-#define AT_CMD_CURRENT_BAND	"AT%XCBAND"
-#define AT_CMD_SUPPORTED_BAND	"AT%XCBAND=?"
-#define AT_CMD_CURRENT_MODE	"AT+CEMODE?"
-#define AT_CMD_CURRENT_OP	"AT+COPS?"
+#define AT_CMD_CESQ 			"AT+CESQ"
+#define AT_CMD_CESQ_ON 			"AT%CESQ=1"
+#define AT_CMD_CESQ_OFF 		"AT%CESQ=0"
+#define AT_CMD_CESQ_RESP 		"%CESQ"
+#define AT_CMD_CURRENT_BAND 	"AT%XCBAND"
+#define AT_CMD_SUPPORTED_BAND 	"AT%XCBAND=?"
+#define AT_CMD_CURRENT_MODE 	"AT+CEMODE?"
+#define AT_CMD_CURRENT_OP 		"AT+COPS?"
 #define AT_CMD_NETWORK_STATUS	"AT+CEREG?"
-#define AT_CMD_PDP_CONTEXT	"AT+CGDCONT?"
-#define AT_CMD_UICC_STATE	"AT%XSIM?"
-#define AT_CMD_VBAT		"AT%XVBAT"
-#define AT_CMD_TEMP		"AT%XTEMP"
-#define AT_CMD_FW_VERSION	"AT+CGMR"
-#define AT_CMD_CRSM		"AT+CRSM"
-#define AT_CMD_ICCID		"AT+CRSM=176,12258,0,0,10"
-#define AT_CMD_SYSTEMMODE	"AT%XSYSTEMMODE?"
-#define AT_CMD_IMSI		"AT+CIMI"
-#define AT_CMD_IMEI		"AT+CGSN"
-#define AT_CMD_SUCCESS_SIZE	5
+#define AT_CMD_PDP_CONTEXT 		"AT+CGDCONT?"
+#define AT_CMD_UICC_STATE 		"AT%XSIM?"
+#define AT_CMD_VBAT 			"AT%XVBAT"
+#define AT_CMD_TEMP 			"AT%XTEMP"
+#define AT_CMD_FW_VERSION 		"AT+CGMR"
+#define AT_CMD_CRSM 			"AT+CRSM"
+#define AT_CMD_ICCID 			"AT+CRSM=176,12258,0,0,10"
+#define AT_CMD_SYSTEMMODE 		"AT%XSYSTEMMODE?"
+#define AT_CMD_IMSI 			"AT+CIMI"
+#define AT_CMD_IMEI 			"AT+CGSN"
+#define AT_CMD_NW_TIME 			"AT+CCLK?"
+#define AT_CMD_SUCCESS_SIZE 	5
 
-#define RSRP_DATA_NAME		"rsrp"
-#define CUR_BAND_DATA_NAME	"currentBand"
-#define SUP_BAND_DATA_NAME	"supportedBands"
-#define UE_MODE_DATA_NAME	"ueMode"
-#define OPERATOR_DATA_NAME	"mccmnc"
-#define MCC_DATA_NAME		"mcc"
-#define MNC_DATA_NAME		"mnc"
-#define AREA_CODE_DATA_NAME	"areaCode"
-#define CELLID_DATA_NAME	"cellID"
-#define IP_ADDRESS_DATA_NAME	"ipAddress"
-#define UICC_DATA_NAME		"uiccMode"
-#define BATTERY_DATA_NAME	"batteryVoltage"
-#define TEMPERATURE_DATA_NAME	"temperature"
-#define MODEM_FW_DATA_NAME	"modemFirmware"
-#define ICCID_DATA_NAME		"iccid"
-#define LTE_MODE_DATA_NAME	"lteMode"
-#define NBIOT_MODE_DATA_NAME	"nbiotMode"
-#define GPS_MODE_DATA_NAME	"gpsMode"
-#define IMSI_DATA_NAME		"imsi"
-#define MODEM_IMEI_DATA_NAME	"imei"
+#define RSRP_DATA_NAME 			"rsrp"
+#define CUR_BAND_DATA_NAME 		"currentBand"
+#define SUP_BAND_DATA_NAME 		"supportedBands"
+#define UE_MODE_DATA_NAME 		"ueMode"
+#define OPERATOR_DATA_NAME 		"mccmnc"
+#define MCC_DATA_NAME 			"mcc"
+#define MNC_DATA_NAME 			"mnc"
+#define AREA_CODE_DATA_NAME 	"areaCode"
+#define CELLID_DATA_NAME 		"cellID"
+#define IP_ADDRESS_DATA_NAME 	"ipAddress"
+#define UICC_DATA_NAME 			"uiccMode"
+#define BATTERY_DATA_NAME 		"batteryVoltage"
+#define TEMPERATURE_DATA_NAME 	"temperature"
+#define MODEM_FW_DATA_NAME 		"modemFirmware"
+#define ICCID_DATA_NAME 		"iccid"
+#define LTE_MODE_DATA_NAME 		"lteMode"
+#define NBIOT_MODE_DATA_NAME 	"nbiotMode"
+#define GPS_MODE_DATA_NAME 		"gpsMode"
+#define IMSI_DATA_NAME 			"imsi"
+#define MODEM_IMEI_DATA_NAME 	"imei"
+#define MODEM_NW_TIME_NAME 		"time"
 
-#define RSRP_PARAM_INDEX	1
-#define RSRP_PARAM_COUNT	3
-#define RSRP_OFFSET_VAL		141
+#define RSRP_PARAM_INDEX 1
+#define RSRP_PARAM_COUNT 3
+#define RSRP_OFFSET_VAL 141
 
-#define BAND_PARAM_INDEX	1 /* Index of desired parameter */
-#define BAND_PARAM_COUNT	2 /* Number of parameters */
+#define BAND_PARAM_INDEX 1 /* Index of desired parameter */
+#define BAND_PARAM_COUNT 2 /* Number of parameters */
 
-#define MODE_PARAM_INDEX	1
-#define MODE_PARAM_COUNT	2
+#define MODE_PARAM_INDEX 1
+#define MODE_PARAM_COUNT 2
 
-#define OPERATOR_PARAM_INDEX	3
-#define OPERATOR_PARAM_COUNT	5
+#define OPERATOR_PARAM_INDEX 3
+#define OPERATOR_PARAM_COUNT 5
 
-#define CELLID_PARAM_INDEX	4
-#define CELLID_PARAM_COUNT	10
+#define CELLID_PARAM_INDEX 4
+#define CELLID_PARAM_COUNT 10
 
-#define AREA_CODE_PARAM_INDEX	3
-#define AREA_CODE_PARAM_COUNT	10
+#define AREA_CODE_PARAM_INDEX 3
+#define AREA_CODE_PARAM_COUNT 10
 
-#define IP_ADDRESS_PARAM_INDEX	4
-#define IP_ADDRESS_PARAM_COUNT	7
+#define IP_ADDRESS_PARAM_INDEX 4
+#define IP_ADDRESS_PARAM_COUNT 7
 
-#define UICC_PARAM_INDEX	1
-#define UICC_PARAM_COUNT	2
+#define UICC_PARAM_INDEX 1
+#define UICC_PARAM_COUNT 2
 
-#define VBAT_PARAM_INDEX	1
-#define VBAT_PARAM_COUNT	2
+#define VBAT_PARAM_INDEX 1
+#define VBAT_PARAM_COUNT 2
 
-#define TEMP_PARAM_INDEX	2
-#define TEMP_PARAM_COUNT	3
+#define TEMP_PARAM_INDEX 2
+#define TEMP_PARAM_COUNT 3
 
-#define MODEM_FW_PARAM_INDEX	0
-#define MODEM_FW_PARAM_COUNT	1
+#define MODEM_FW_PARAM_INDEX 0
+#define MODEM_FW_PARAM_COUNT 1
 
-#define ICCID_PARAM_INDEX	3
-#define ICCID_PARAM_COUNT	4
+#define ICCID_PARAM_INDEX 3
+#define ICCID_PARAM_COUNT 4
 
-#define LTE_MODE_PARAM_INDEX	1
-#define NBIOT_MODE_PARAM_INDEX	2
-#define GPS_MODE_PARAM_INDEX	3
-#define SYSTEMMODE_PARAM_COUNT	5
+#define LTE_MODE_PARAM_INDEX 1
+#define NBIOT_MODE_PARAM_INDEX 2
+#define GPS_MODE_PARAM_INDEX 3
+#define SYSTEMMODE_PARAM_COUNT 5
 
-#define IMSI_PARAM_INDEX    0
-#define IMSI_PARAM_COUNT    1
+#define IMSI_PARAM_INDEX 0
+#define IMSI_PARAM_COUNT 1
 
-#define MODEM_IMEI_PARAM_INDEX	0
-#define MODEM_IMEI_PARAM_COUNT  1
+#define MODEM_IMEI_PARAM_INDEX 0
+#define MODEM_IMEI_PARAM_COUNT 1
+
+#define MODEM_TIME_PARAM_INDEX 1
+#define MODEM_TIME_PARAM_COUNT 1
 
 struct modem_info_data {
 	const char *cmd;
@@ -264,19 +269,27 @@ static const struct modem_info_data gps_mode_data = {
 };
 
 static const struct modem_info_data imsi_data = {
-	.cmd		= AT_CMD_IMSI,
-	.data_name	= IMSI_DATA_NAME,
-	.param_index	= IMSI_PARAM_INDEX,
-	.param_count	= IMSI_PARAM_COUNT,
-	.data_type	= AT_PARAM_TYPE_STRING,
+	.cmd = AT_CMD_IMSI,
+	.data_name = IMSI_DATA_NAME,
+	.param_index = IMSI_PARAM_INDEX,
+	.param_count = IMSI_PARAM_COUNT,
+	.data_type = AT_PARAM_TYPE_STRING,
 };
 
 static const struct modem_info_data imei_data = {
-	.cmd		= AT_CMD_IMEI,
-	.data_name	= MODEM_IMEI_DATA_NAME,
-	.param_index	= MODEM_IMEI_PARAM_INDEX,
-	.param_count	= MODEM_IMEI_PARAM_COUNT,
-	.data_type	= AT_PARAM_TYPE_STRING,
+	.cmd = AT_CMD_IMEI,
+	.data_name = MODEM_IMEI_DATA_NAME,
+	.param_index = MODEM_IMEI_PARAM_INDEX,
+	.param_count = MODEM_IMEI_PARAM_COUNT,
+	.data_type = AT_PARAM_TYPE_STRING,
+};
+
+static const struct modem_info_data time_data = {
+	.cmd = AT_CMD_NW_TIME,
+	.data_name = MODEM_NW_TIME_NAME,
+	.param_index = MODEM_TIME_PARAM_INDEX,
+	.param_count = MODEM_TIME_PARAM_COUNT,
+	.data_type = AT_PARAM_TYPE_STRING,
 };
 
 static const struct modem_info_data *const modem_data[] = {
@@ -297,9 +310,10 @@ static const struct modem_info_data *const modem_data[] = {
 	[MODEM_INFO_ICCID] = &iccid_data,
 	[MODEM_INFO_LTE_MODE] = &lte_mode_data,
 	[MODEM_INFO_NBIOT_MODE] = &nbiot_mode_data,
-	[MODEM_INFO_GPS_MODE]   = &gps_mode_data,
-	[MODEM_INFO_IMSI]	= &imsi_data,
-	[MODEM_INFO_IMEI]	= &imei_data,
+	[MODEM_INFO_GPS_MODE] = &gps_mode_data,
+	[MODEM_INFO_IMSI] = &imsi_data,
+	[MODEM_INFO_IMEI] = &imei_data,
+	[MODEM_INFO_TIME] = &time_data,
 };
 
 static rsrp_cb_t modem_info_rsrp_cb;
@@ -368,7 +382,9 @@ int modem_info_name_get(enum modem_info info, char *name)
 		return -EINVAL;
 	}
 
-	memcpy(name, modem_data[info]->data_name, len);
+	memcpy(name,
+		modem_data[info]->data_name,
+		len);
 
 	return len;
 }
@@ -376,7 +392,7 @@ int modem_info_name_get(enum modem_info info, char *name)
 int modem_info_short_get(enum modem_info info, u16_t *buf)
 {
 	int err;
-	char recv_buf[CONFIG_MODEM_INFO_BUFFER_SIZE] = { 0 };
+	char recv_buf[CONFIG_MODEM_INFO_BUFFER_SIZE] = {0};
 	int cmd_length = 0;
 
 	if (buf == NULL) {
@@ -387,8 +403,10 @@ int modem_info_short_get(enum modem_info info, u16_t *buf)
 		return -EINVAL;
 	}
 
-	err = at_cmd_write(modem_data[info]->cmd, recv_buf,
-			   CONFIG_MODEM_INFO_BUFFER_SIZE, NULL);
+	err = at_cmd_write(modem_data[info]->cmd,
+			   recv_buf,
+			   CONFIG_MODEM_INFO_BUFFER_SIZE,
+			   NULL);
 
 	if (err != 0) {
 		return -EIO;
@@ -400,7 +418,8 @@ int modem_info_short_get(enum modem_info info, u16_t *buf)
 		return err;
 	}
 
-	err = at_params_short_get(&m_param_list, modem_data[info]->param_index,
+	err = at_params_short_get(&m_param_list,
+				  modem_data[info]->param_index,
 				  buf);
 
 	if (err) {
@@ -422,8 +441,10 @@ int modem_info_string_get(enum modem_info info, char *buf)
 		return -EINVAL;
 	}
 
-	err = at_cmd_write(modem_data[info]->cmd, recv_buf,
-			   CONFIG_MODEM_INFO_BUFFER_SIZE, NULL);
+	err = at_cmd_write(modem_data[info]->cmd,
+			  recv_buf,
+			  CONFIG_MODEM_INFO_BUFFER_SIZE,
+			  NULL);
 
 	if (err != 0) {
 		return -EIO;
@@ -507,12 +528,7 @@ int modem_info_init(void)
 {
 	/* Init at_cmd_parser storage module */
 	int err = at_params_list_init(&m_param_list,
-				      CONFIG_MODEM_INFO_MAX_AT_PARAMS_RSP);
-	return err;
-}
+				CONFIG_MODEM_INFO_MAX_AT_PARAMS_RSP);
 
-int modem_info_uninit(void)
-{
-	at_params_list_free(&m_param_list);
-	return 0;
+	return err;
 }

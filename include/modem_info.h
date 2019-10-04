@@ -56,6 +56,7 @@ enum modem_info {
 	MODEM_INFO_GPS_MODE,	/**< GPS support mode. */
 	MODEM_INFO_IMSI,	/**< Mobile subscriber identity. */
 	MODEM_INFO_IMEI,	/**< Modem serial number. */
+	MODEM_INFO_TIME,	/**< Modem network time. */
 	MODEM_INFO_COUNT,	/**< Number of legal elements in the enum. */
 };
 
@@ -76,6 +77,7 @@ struct network_param {
 	struct lte_param current_operator; /**< Current operator. */
 	struct lte_param mcc; /**< Mobile country code. */
 	struct lte_param mnc; /**< Mobile network code. */
+	struct lte_param time; /**< Network time. */
 	struct lte_param
 		cellid_hex; /**< Cell ID of the device (in HEX format). */
 	struct lte_param ip_address; /**< IP address of the device. */
@@ -118,14 +120,6 @@ struct modem_param_info {
  *           Otherwise, a (negative) error code is returned.
  */
 int modem_info_init(void);
-
-/** @brief Uninitialize the modem information module.
- *
- * @retval 0 If the operation was successful.
- *           Otherwise, a (negative) error code is returned.
- */
-
-int modem_info_uninit(void);
 
 /** @brief Initialize the structure that stores modem information.
  *
