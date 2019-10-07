@@ -40,7 +40,7 @@ LOG_MODULE_REGISTER(modem_info);
 #define AT_CMD_SYSTEMMODE 		"AT%XSYSTEMMODE?"
 #define AT_CMD_IMSI 			"AT+CIMI"
 #define AT_CMD_IMEI 			"AT+CGSN"
-#define AT_CMD_NW_TIME 			"AT+CCLK?"
+#define AT_CMD_DATE_TIME 		"AT+CCLK?"
 #define AT_CMD_SUCCESS_SIZE 	5
 
 #define RSRP_DATA_NAME 			"rsrp"
@@ -63,7 +63,7 @@ LOG_MODULE_REGISTER(modem_info);
 #define GPS_MODE_DATA_NAME 		"gpsMode"
 #define IMSI_DATA_NAME 			"imsi"
 #define MODEM_IMEI_DATA_NAME 	"imei"
-#define MODEM_NW_TIME_NAME 		"time"
+#define DATE_TIME_DATA_NAME 		"datetime"
 
 #define RSRP_PARAM_INDEX 1
 #define RSRP_PARAM_COUNT 3
@@ -113,8 +113,8 @@ LOG_MODULE_REGISTER(modem_info);
 #define MODEM_IMEI_PARAM_INDEX 0
 #define MODEM_IMEI_PARAM_COUNT 1
 
-#define MODEM_TIME_PARAM_INDEX 1
-#define MODEM_TIME_PARAM_COUNT 1
+#define DATE_TIME_PARAM_INDEX 1
+#define DATE_TIME_PARAM_COUNT 2
 
 struct modem_info_data {
 	const char *cmd;
@@ -285,10 +285,10 @@ static const struct modem_info_data imei_data = {
 };
 
 static const struct modem_info_data time_data = {
-	.cmd = AT_CMD_NW_TIME,
-	.data_name = MODEM_NW_TIME_NAME,
-	.param_index = MODEM_TIME_PARAM_INDEX,
-	.param_count = MODEM_TIME_PARAM_COUNT,
+	.cmd = AT_CMD_DATE_TIME,
+	.data_name = DATE_TIME_DATA_NAME,
+	.param_index = DATE_TIME_PARAM_INDEX,
+	.param_count = DATE_TIME_PARAM_COUNT,
 	.data_type = AT_PARAM_TYPE_STRING,
 };
 
@@ -313,7 +313,7 @@ static const struct modem_info_data *const modem_data[] = {
 	[MODEM_INFO_GPS_MODE] = &gps_mode_data,
 	[MODEM_INFO_IMSI] = &imsi_data,
 	[MODEM_INFO_IMEI] = &imei_data,
-	[MODEM_INFO_TIME] = &time_data,
+	[MODEM_INFO_DATE_TIME] = &time_data,
 };
 
 static rsrp_cb_t modem_info_rsrp_cb;
