@@ -69,27 +69,24 @@ static const char mdm_trace[] = "AT%XMODEMTRACE=1,2";
 /* Subscribes to notifications with level 5 */
 static const char cereg_5_subscribe[] = AT_CEREG_5;
 
-/* Request current network registration status */
-static const char current_nw_status[] = "AT+CEREG?";
-
 #if defined(CONFIG_LTE_LOCK_BANDS)
 /* Lock LTE bands 3, 4, 13 and 20 (volatile setting) */
-static const char lock_bands[] =
-	"AT%XBANDLOCK=2,\"" CONFIG_LTE_LOCK_BAND_MASK "\"";
+static const char lock_bands[] = "AT%XBANDLOCK=2,\""CONFIG_LTE_LOCK_BAND_MASK
+				 "\"";
 #endif
 #if defined(CONFIG_LTE_LOCK_PLMN)
 /* Lock PLMN */
 static const char lock_plmn[] = "AT+COPS=1,2,\""
-				CONFIG_LTE_LOCK_PLMN_STRING "\"";
+				 CONFIG_LTE_LOCK_PLMN_STRING"\"";
 #endif
 /* Request eDRX settings to be used */
-static const char edrx_req[] = "AT+CEDRXS=1," CONFIG_LTE_EDRX_REQ_ACTT_TYPE
-			       ",\"" CONFIG_LTE_EDRX_REQ_VALUE "\"";
+static const char edrx_req[] = "AT+CEDRXS=1,"CONFIG_LTE_EDRX_REQ_ACTT_TYPE
+	",\""CONFIG_LTE_EDRX_REQ_VALUE"\"";
 /* Request eDRX to be disabled */
 static const char edrx_disable[] = "AT+CEDRXS=3";
 /* Request modem to go to power saving mode */
-static const char psm_req[] = "AT+CPSMS=1,,,\"" CONFIG_LTE_PSM_REQ_RPTAU
-			      "\",\"" CONFIG_LTE_PSM_REQ_RAT "\"";
+static const char psm_req[] = "AT+CPSMS=1,,,\""CONFIG_LTE_PSM_REQ_RPTAU
+			      "\",\""CONFIG_LTE_PSM_REQ_RAT"\"";
 
 /* Request PSM to be disabled */
 static const char psm_disable[] = "AT+CPSMS=";
@@ -99,6 +96,8 @@ static const char power_off[] = "AT+CFUN=0";
 static const char normal[] = "AT+CFUN=1";
 /* Set the modem to Offline mode */
 static const char offline[] = "AT+CFUN=4";
+
+static const char gps_mode[] = "AT%XSYSTEMMODE=0,0,1,0";
 
 #if defined(CONFIG_LTE_NETWORK_MODE_NBIOT)
 /* Preferred network mode: Narrowband-IoT */
@@ -122,12 +121,10 @@ static const char nw_mode_preferred[] = "AT%XSYSTEMMODE=1,0,1,0";
 static const char nw_mode_fallback[] = "AT%XSYSTEMMODE=0,1,1,0";
 #endif
 
-static const char gps_mode[] = "AT%XSYSTEMMODE=0,0,1,0";
-
 static struct k_sem link;
 
 #if defined(CONFIG_LTE_PDP_CMD) && defined(CONFIG_LTE_PDP_CONTEXT)
-static const char cgdcont[] = "AT+CGDCONT=" CONFIG_LTE_PDP_CONTEXT;
+static const char cgdcont[] = "AT+CGDCONT="CONFIG_LTE_PDP_CONTEXT;
 #endif
 #if defined(CONFIG_LTE_PDN_AUTH_CMD) && defined(CONFIG_LTE_PDN_AUTH)
 static const char cgauth[] = "AT+CGAUTH="CONFIG_LTE_PDN_AUTH;
@@ -138,16 +135,8 @@ static const char legacy_pco[] = "AT%XEPCO=0";
 
 void at_handler(char *response)
 {
-<<<<<<< HEAD
 	int err;
 	enum lte_lc_nw_reg_status status;
-=======
-	char id[16];
-	u32_t val;
-	size_t len = 16;
-
-	LOG_DBG("recv: %s", log_strdup(response));
->>>>>>> feat: reworked connection handling
 
 	if (response == NULL) {
 		LOG_ERR("Response buffer is NULL-pointer");
@@ -219,68 +208,6 @@ static int w_lte_lc_init(void)
 	}
 	LOG_INF("PDN Auth: %s", log_strdup(cgauth));
 #endif
-
-	return 0;
-}
-
-int lte_lc_nw_reg_status(void)
-{
-	int err = 0;
-	char id[16];
-	u32_t val;
-	size_t len = 16;
-	char buf[100] = { 0 };
-
-	at_params_list_init(&params, 10);
-
-	if (at_cmd_write(current_nw_status, buf, sizeof(buf), NULL) != 0) {
-		err = -EIO;
-		goto exit;
-	}
-
-	LOG_DBG("nw status: %s", log_strdup(buf));
-
-	if (at_parser_params_from_str(buf, NULL, &params) != 0) {
-		err = -EIO;
-		goto exit;
-	}
-
-	if (at_params_string_get(&params, 0, id, &len) != 0) {
-		err = -EIO;
-		goto exit;
-	}
-
-	if ((len > 0) &&
-	    (memcmp(id, "+CEREG", 6) == 0)) {
-		if (at_params_int_get(&params, 1, &val) != 0) {
-			err = -EIO;
-			goto exit;
-		}
-
-		if (!((val == 1) || (val == 5))) {
-			err = -ENOTCONN;
-		}
-	}
-
-exit:
-	at_params_list_free(&params);
-
-	return err;
-}
-
-int lte_lc_gps_nw_mode(void)
-{
-	if (at_cmd_write(offline, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
-
-	if (at_cmd_write(gps_mode, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
-
-	if (at_cmd_write(normal, NULL, 0, NULL) != 0) {
-		return -EIO;
-	}
 
 	return 0;
 }
@@ -399,7 +326,8 @@ int lte_lc_normal(void)
 
 int lte_lc_psm_req(bool enable)
 {
-	if (at_cmd_write(enable ? psm_req : psm_disable, NULL, 0, NULL) != 0) {
+	if (at_cmd_write(enable ? psm_req : psm_disable,
+			 NULL, 0, NULL) != 0) {
 		return -EIO;
 	}
 
@@ -507,8 +435,8 @@ parse_psm_clean_exit:
 
 int lte_lc_edrx_req(bool enable)
 {
-	if (at_cmd_write(enable ? edrx_req : edrx_disable, NULL, 0, NULL) !=
-	    0) {
+	if (at_cmd_write(enable ? edrx_req : edrx_disable,
+			 NULL, 0, NULL) != 0) {
 		return -EIO;
 	}
 
@@ -866,6 +794,23 @@ clean_exit:
 	at_params_list_free(&resp_list);
 
 	return err;
+}
+
+int lte_lc_gps_nw_mode(void)
+{
+	if (at_cmd_write(offline, NULL, 0, NULL) != 0) {
+		return -EIO;
+	}
+
+	if (at_cmd_write(gps_mode, NULL, 0, NULL) != 0) {
+		return -EIO;
+	}
+
+	if (at_cmd_write(normal, NULL, 0, NULL) != 0) {
+		return -EIO;
+	}
+
+	return 0;
 }
 
 #if defined(CONFIG_LTE_AUTO_INIT_AND_CONNECT)
